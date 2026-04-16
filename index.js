@@ -7,7 +7,7 @@ const mineflayer = require('mineflayer');
 
 const botOptions = {
     host: 'KapakSMP.aternos.me', // BURAYA KENDİ IP ADRESİNİ YAZ
-    port: 25565,
+    port: 62351,
     username: 'afk_bot',
     version: false 
 };
