@@ -1,3 +1,8 @@
+const http = require('http');
+http.createServer((req, res) => {
+    res.write('Bot Calisiyor!');
+    res.end();
+}).listen(process.env.PORT || 3000);
 const mineflayer = require('mineflayer');
 
 const botOptions = {
