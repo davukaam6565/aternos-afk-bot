@@ -29,7 +29,7 @@ server.listen(PORT, () => {
 
 // --- 2. MINECRAFT BOT AYARLARI ---
 const botArgs = {
-    host: 'sodasmp.funserver.top', // Örn: sunucu.magmanode.com
+    host: 'gold.magmanode.com', // Örn: sunucu.magmanode.com
     port: 34688,                     // Eğer farklı bir portun varsa değiştir
     username: 'afk_bot',      // Botun oyundaki adı
     version: "1.21.11",                  // Otomatik versiyon tespiti
