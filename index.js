@@ -6,7 +6,7 @@ http.createServer((req, res) => {
 const mineflayer = require('mineflayer');
 
 const botOptions = {
-    host: 'KapakSMP.aternos.me', // BURAYA KENDİ IP ADRESİNİ YAZ
+    host: 'jewelfish.aternos.host:62351', // BURAYA KENDİ IP ADRESİNİ YAZ
     port: 62351,
     username: 'afk_bot',
     version: false 
