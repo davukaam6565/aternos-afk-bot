@@ -44,8 +44,22 @@ function createBot() {
         console.log("Minecraft sunucusuna giriş yapıldı!");
     });
 
-    bot.on('spawn', () => {
-        console.log("Bot oyunda, hareket döngüsü aktif.");
+bot.on('spawn', () => {
+        console.log("Bot oyunda, giriş yapılıyor ve hareket döngüsü başlıyor.");
+        
+        // Sunucuya tam yerleşmesi için 2 saniye bekleyip giriş yapar
+        setTimeout(() => {
+            bot.chat('/register Sifre123 Sifre123'); // İlk kez giriyorsa kayıt olur
+            bot.chat('/login Sifre123');           // Zaten kayıtlıysa giriş yapar
+        }, 2000); 
+
+        // Anti-AFK hareket döngüsü
+        setInterval(() => {
+            bot.setControlState('jump', true);
+            setTimeout(() => bot.setControlState('jump', false), 500);
+            bot.look(Math.random() * Math.PI * 2, 0);
+        }, 20000);
+    });
         // Anti-AFK: 20 saniyede bir rastgele zıplama ve bakış
         setInterval(() => {
             bot.setControlState('jump', true);
