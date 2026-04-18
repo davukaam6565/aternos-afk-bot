@@ -4,7 +4,8 @@
   "main": "index.js",
   "dependencies": {
     "mineflayer": "^4.20.0",
-    "axios": "^1.6.0"
+    "axios": "^1.6.0",
+    "puppeteer": "latest"
   },
   "scripts": {
     "start": "node index.js"
