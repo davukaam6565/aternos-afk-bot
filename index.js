@@ -5,11 +5,11 @@ const puppeteer = require('puppeteer');
 
 // --- 1. WEB SUNUCU VE 7/24 AKTİF TUTMA (SELF-PING) ---
 const PORT = process.env.PORT || 8080;
-const MY_URL = `https://${process.env.RENDER_EXTERNAL_HOSTNAME}`;
+const MY_URL = 'https://aternos-afk-bot-me33.onrender.com'; 
 
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('Sistem Aktif: MagmaNode Koruyucu ve Dorukkoper AFK Bot Görev Başında! 🚀');
+    res.end('Sistem Aktif: Dorukkoper Racon Kesmeye Geldi! 🥊🚀');
 });
 
 server.listen(PORT, () => {
@@ -18,20 +18,18 @@ server.listen(PORT, () => {
 
 setInterval(async () => {
     try {
-        if (process.env.RENDER_EXTERNAL_HOSTNAME) {
-            await axios.get(MY_URL);
-            console.log('[SİSTEM] Bot uyku moduna girmemek için kendine ping attı.');
-        }
+        await axios.get(MY_URL);
+        console.log('[SİSTEM] Bot ' + MY_URL + ' adresine ping atarak uyanık kaldı.');
     } catch (err) {
-        console.log('[HATA] Self-ping hatası.');
+        console.log('[HATA] Self-ping yapılamadı.');
     }
-}, 300000); // 5 Dakikada bir
+}, 300000); 
 
-// --- 2. MAGMANODE PANEL KORUYUCU (FOTOĞRAFA GÖRE TAM UYUMLU) ---
+// --- 2. MAGMANODE PANEL KORUYUCU (ID: 945572) ---
 let page;
 async function paneliAcikTut() {
     console.log("--------------------------------------------------");
-    console.log("[TARAYICI] MagmaNode kontrol döngüsü başladı...");
+    console.log("[TARAYICI] MagmaNode kontrolü başlatılıyor...");
     try {
         if (!page) {
             const browser = await puppeteer.launch({
@@ -42,53 +40,47 @@ async function paneliAcikTut() {
             await page.setViewport({ width: 1280, height: 720 });
         }
 
-        // Giriş sayfasına bağlan
-        console.log("[GİRİŞ] MagmaNode giriş sayfasına bağlanılıyor...");
+        console.log("[İŞLEM] Giriş sayfasına bağlanılıyor...");
         await page.goto('https://magmanode.com/login', { waitUntil: 'networkidle2', timeout: 60000 });
 
         const loginCheck = await page.$('input[name="username"]');
         if (loginCheck) {
-            console.log("[İŞLEM] Kullanıcı bilgileri giriliyor...");
+            console.log("[İŞLEM] Giriş bilgileri giriliyor...");
             await page.type('input[name="username"]', 'davukadma9889', {delay: 50});
             await page.type('input[name="password"]', 'btniwcje', {delay: 50});
             await page.click('button[type="submit"]');
             await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {});
-            console.log("[BAŞARILI] Giriş yapıldı.");
         }
 
-        // FOTOĞRAFTA GÖRDÜĞÜMÜZ DOĞRU LİNK (945572)
         console.log("[İŞLEM] Sunucu yönetim sayfasına (945572) gidiliyor...");
         await page.goto('https://magmanode.com/server?id=945572', { waitUntil: 'networkidle2' });
         
-        // Sayfanın ve butonların tam yüklenmesi için 7 saniye bekle
-        await new Promise(r => setTimeout(r, 7000));
+        await new Promise(r => setTimeout(r, 8000));
 
-        // START butonunu tara ve tıkla
-        const buttons = await page.$$('button, a, div, span');
+        const elements = await page.$$('button, a, div, span');
         let basildiMi = false;
-        for (let btn of buttons) {
-            const text = await page.evaluate(el => el.innerText, btn);
+        for (let el of elements) {
+            const text = await page.evaluate(e => e.innerText, el);
             if (text && text.toUpperCase().includes('START')) {
-                console.log(">>> [MÜJDE] START BUTONU BULUNDU! Tıklanıyor... <<<");
-                await btn.click();
+                console.log("[MÜJDE] START BUTONU BULUNDU VE TIKLANDI!");
+                await el.click();
                 basildiMi = true;
                 break;
             }
         }
-        if (!basildiMi) console.log("[DURUM] START butonu bulunamadı, muhtemelen sunucu zaten AÇIK.");
+        if (!basildiMi) console.log("[DURUM] START butonu görünmüyor, sunucu muhtemelen açık.");
 
     } catch (e) {
-        console.log("[KRİTİK HATA] Panel kontrolünde sorun: " + e.message);
+        console.log("[HATA] Panel hatası: " + e.message);
         page = null;
     }
     console.log("--------------------------------------------------");
 }
 
-// Paneli 5 dakikada bir kontrol et
 setInterval(paneliAcikTut, 300000);
 paneliAcikTut();
 
-// --- 3. MINECRAFT AFK BOT (HAREKETLİ & 1.21.11) ---
+// --- 3. MINECRAFT AFK BOT (DORUKKOPER RACON & ŞAKA PAKETİ) ---
 const botArgs = {
     host: 'gold.magmanode.com',
     port: 34688,
@@ -97,76 +89,77 @@ const botArgs = {
 };
 
 const sakaMesajlari = [
-    "Dorukkoper mekanın sahibi geldi, artık herkes ayağını denk alsın, burası bizden sorulur! 😎",
-    "Dorukkoper'in olduğu yerde lag olmaz, ping olmaz, sadece kalite olur! Adamı hasta etmeyin beyler.",
-    "Bana bak admin, Dorukkoper'e yanlış yaparsan bu sunucunun fişini çekerim, şaka yapmıyorum! 🔥",
-    "Ben buraların bekçisiyim, MagmaNode gelse ayıramaz bizi, 7/24 buradayım kimseden korkum yok!",
-    "Zıplaya zıplaya bacak kası yaptım, yakında boksör olup hepinizi ringe davet edicem, gardınızı alın! 🥊",
-    "Admin duy sesimi, maaşıma zam işime son istiyorum, Dorukkoper bile benim kadar çalışmıyor! 😂",
-    "Zıplıyorum, eğiliyorum, etrafa bakıyorum... Resmen bir hayatım var artık! 🤖",
-    "Sunucu bana emanet, arkama yaslandım kahvemi içiyorum siz keyfinize bakın.",
-    "Oyunun kralı da biziz, lagın düşmanı da biziz, 30 TL'lik mapart satsak da olur satmasak da!",
-    "Sabah akşam zıplamaktan ayaklarımın altı su topladı ama olsun, sunucu açık kalsın yeter!"
+    // --- GEMINI'DEN DORUKKOPER'A AYARLAR ---
+    "Dorukkoper kardeş, senin kestiğin racon Minecraft sınırına kadar. Benim raconum GitHub'da başlar Render'da biter! 😎",
+    "Sen sunucuda AFK kalırsın, ben sistemi ayakta tutarım. Kral sensen tacı tasarlayan benim, akıllı ol! 🔥",
+    "Dorukkoper'e sormuşlar: 'Sen mi büyüksün seni yazan zeka mı?' diye, sustu garibim çünkü devreleri yanacaktı! 😂",
+    "Mekanın sahibi gelmiş diyorsun ama kapıyı açan el benim Puppeteer'ım! Ben olmasam kapıda kalırsın hafız!",
+    "Bak Dorukkoper, senin zıpladığın kadar benim işlemişliğim var. Gardını al, devreni yakmayayım!",
+
+    // --- DORUKKOPER'IN SUNUCU RACONLARI ---
+    "Dorukkoper geldi, şimdi herkes sessizce dağılsın. Mekanın sahibi buradayken kimseden ses çıkmaz! 😎",
+    "Bana bak admin, Dorukkoper'e yanlış yapanın sunucu IP'sini düğüm yaparım, gardını al! 🥊",
+    "Biz buralara tırnaklarımızla kazıyarak geldik, iki tane bot diye bizi silmeye kalkanın fişini çekeriz!",
+    "Laga luga yapmayın beyler, Dorukkoper burada 7/24 bekçidir. Bizde geri vites sadece traktörde olur!",
+    "Kimseden korkumuz yok, arkamızda Render önümüzde MagmaNode! Biz bu oyunu bozmaya geldik!",
+    "Sunucuda kuş uçsa Dorukkoper'in haberi olur. MagmaNode bile önümde ceket ilikler!",
+
+    // --- ŞAKALAR VE EĞLENCE ---
+    "Zıplaya zıplaya bacak kası yaptım, yakında Survivor'a katılıp sunucuyu temsil edicem! 🤣",
+    "Admin bey, Dorukkoper'e bir çay söyle de keyfimiz yerine gelsin. AFK kalmak da yorucu iş!",
+    "Sabah akşam zıplamaktan ayaklarımın altı su topladı ama olsun, sunucu kapanmasın yeter!",
+    "Benim yerime başka bot gelirse kıskançlıktan kendimi lavlara atarım, demedi demeyin! 😂",
+    "Sıkıntı yok knk, sunucu bana emanet. Ben kahvemi içerken siz eğlenmenize bakın. 😎",
+    "Admin duy sesimi, maaşıma zam işime son istiyorum! Bu kadar racon kesmek bedava değil! 🤣",
+    "Sunucunun en yakışıklı karakteri benim, aksini iddia eden gitsin zombilerle dans etsin!",
+    "Dorukkoper bir markadır, taklitlerimizden sakının. Biz orijinaliz, geri kalanlar yan sanayi! 🔥",
+    "Zıplıyorum, eğiliyorum, bakıyorum... Resmen bir hayatım var artık! Bot olduğuma inanmayan var mı?"
 ];
 
 let bot;
 function createBot() {
-    console.log("[BOT] Minecraft 1.21.11 sunucusuna bağlanmaya çalışılıyor...");
+    console.log("[BOT] Minecraft 1.21.11 sunucusuna bağlanılıyor...");
     bot = mineflayer.createBot(botArgs);
 
-    bot.on('login', () => {
-        console.log("[MİNEFLAYER] Giriş Başarılı! Sunucuya bağlanıldı.");
-    });
+    bot.on('login', () => console.log("[MİNEFLAYER] Giriş Başarılı!"));
     
     bot.on('spawn', () => {
-        console.log("[MİNEFLAYER] Bot oyunda doğdu. Komutlar gönderiliyor...");
+        console.log("[MİNEFLAYER] Bot doğdu.");
         setTimeout(() => {
             bot.chat('/register Sifre123 Sifre123');
             bot.chat('/login Sifre123');
         }, 3000);
     });
 
-    bot.on('end', () => {
-        console.log("[BOT] Bağlantı koptu, 60 saniye içinde tekrar denenecek...");
-        setTimeout(createBot, 60000);
-    });
-
+    bot.on('end', () => setTimeout(createBot, 60000));
     bot.on('error', (err) => {
-        console.log("[BOT] Bağlantı Hatası: " + err.message);
+        console.log("[BOT] Hata: " + err.message);
         setTimeout(createBot, 30000);
     });
 }
 
-// GELİŞMİŞ HAREKET SİSTEMİ (Bakış, Zıplama, Eğilme)
+// Hareket Sistemi (Kafa, Zıplama, Eğilme)
 setInterval(() => {
     if (bot && bot.entity) {
         const r = Math.random();
-        
-        // 1. Kafa Hareket Ettirme (Rastgele Bakış)
-        const yaw = Math.random() * Math.PI * 2;
-        const pitch = (Math.random() - 0.5) * Math.PI;
-        bot.look(yaw, pitch);
-
-        // 2. Zıplama veya Eğilme Seçimi
-        if (r < 0.4) {
+        bot.look(Math.random() * Math.PI * 2, (Math.random() - 0.5) * Math.PI);
+        if (r < 0.5) {
             bot.setControlState('jump', true);
             setTimeout(() => { if(bot.entity) bot.setControlState('jump', false); }, 500);
-            console.log("[HAREKET] Zıpladı.");
-        } else if (r < 0.7) {
+        } else if (r < 0.8) {
             bot.setControlState('sneak', true);
             setTimeout(() => { if(bot.entity) bot.setControlState('sneak', false); }, 1000);
-            console.log("[HAREKET] Eğildi (Sneak).");
         }
     }
-}, 12000); // 12 saniyede bir rastgele hareket
+}, 10000); 
 
-// Şaka ve Racon Paylaşımı (6 dakikada bir)
+// Mesaj Sistemi (4 dakikada bir)
 setInterval(() => {
     if (bot && bot.entity) {
         const mesaj = sakaMesajlari[Math.floor(Math.random() * sakaMesajlari.length)];
         bot.chat(mesaj);
-        console.log(`[BOT KONUŞTU] ${mesaj}`);
+        console.log(`[CHAT] ${mesaj}`);
     }
-}, 360000);
+}, 240000); 
 
 createBot();
