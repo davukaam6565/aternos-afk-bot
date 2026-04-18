@@ -54,15 +54,24 @@ async function paneliAcikTut() {
             console.log("[GÜNCELLEME] Panel tazelendi.");
         }
 
-        // OTOMATİK BAŞLATMA MANTIĞI
-        const startButton = await page.$('button.btn-primary'); 
-        if (startButton) {
-            const text = await page.evaluate(el => el.innerText, startButton);
-            if (text.includes('START') || text.includes('Başlat')) {
-                console.log("[UYARI] Sunucu kapali! Baslatiliyor...");
-                await startButton.click();
+        // YENİ GARANTİ BAŞLATMA SİSTEMİ
+        const herSey = await page.$$('button, a, div, span'); 
+        let basildiMi = false;
+
+        for (let parca of herSey) {
+            try {
+                const text = await page.evaluate(el => el.innerText, parca);
+                if (text && text.toUpperCase().includes('START')) {
+                    console.log("[MÜJDE] START yazısı bulundu, üzerine basılıyor...");
+                    await parca.click();
+                    basildiMi = true;
+                    break; 
+                }
+            } catch (err) {
+                continue;
             }
         }
+        if (!basildiMi) console.log("[BİLGİ] START butonu henüz görünür değil.");
 
     } catch (e) {
         console.log("[HATA] Tarayici sisteminde hata: " + e);
