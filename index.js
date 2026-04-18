@@ -76,6 +76,30 @@ function createBot() {
         console.log("Bağlantı koptu, tekrar bağlanılıyor...");
         setTimeout(createBot, 5000);
     });
+    const sakaMesajlari = [
+        "Ben buraların bekçisiyim, MagmaNode gelse ayıramaz bizi! 😎",
+        "Zıplaya zıplaya bacak kası yaptım, yakında boksör olcam. 🥊",
+        "Admin duy sesimi, maaşıma zam işime son istiyorum! 😂",
+        "Dorukkoper kankam nerede ya, o olmayınca buralar çok ıssız... 🌵",
+        "Beni burada unutup gitmeyin ha, gece korkuyorum... 👻",
+        "Sıkıntı yok knk, sunucu bana emanet. Siz keyfinize bakın.",
+        "Dorukkoper gelirse söyleyin, ona bir çift lafım var! 😂",
+        "Lag mı var yoksa bana mı öyle geliyor? Neyse zıplamaya devam.",
+        "Birisi bana elmas versin de şu halimden kurtulayım artık! 💎",
+        "Dorukkoper ile boks maçımız ne zaman? Sabırsızlıkla bekliyorum. 🥊",
+        "Bot dediler, bağırlarına bastılar... Ben sadece bir görev adamıyım. 🫡"
+    ];
+
+    setInterval(() => {
+        if (bot && bot.entity) {
+            const sakaciMesaj = sakaMesajlari[Math.floor(Math.random() * sakaMesajlari.length)];
+            const yaw = Math.random() * Math.PI * 2;
+            const pitch = (Math.random() - 0.5) * Math.PI;
+            bot.look(yaw, pitch);
+            bot.chat(sakaciMesaj);
+            console.log(`[MESAJ] 5 dk doldu: ${sakaciMesaj}`);
+        }
+    }, 300000);
 
     bot.on('error', (err) => console.log("Hata oluştu:", err));
 }
