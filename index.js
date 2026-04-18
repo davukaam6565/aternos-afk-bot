@@ -9,18 +9,18 @@ const MY_URL = 'https://aternos-afk-bot-me33.onrender.com';
 
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('Sistem Aktif: Dorukkoper 1.21.11 Sürümüyle Görev Başında! 🥊🚀');
+    res.end('Sistem Aktif: afk_bot Görev Başında! 🚀');
 }).listen(PORT);
 
 setInterval(async () => {
     try { await axios.get(MY_URL); } catch (err) {}
 }, 300000); 
 
-// --- 2. REKLAM SAVAR MAGMANODE KORUYUCU (ID: 945572) ---
+// --- 2. ZORLAYICI REKLAM SAVAR MAGMANODE KORUYUCU ---
 let page;
 async function paneliAcikTut() {
     console.log("--------------------------------------------------");
-    console.log("[SİSTEM] MagmaNode kontrolü başladı...");
+    console.log("[SİSTEM] Sunucu uyandırma operasyonu başlıyor...");
     try {
         if (!page) {
             const browser = await puppeteer.launch({
@@ -31,6 +31,7 @@ async function paneliAcikTut() {
             await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36');
         }
 
+        // 1. ADIM: GİRİŞ YAP
         await page.goto('https://magmanode.com/login', { waitUntil: 'networkidle2' });
         const userField = await page.$('input[name="username"]');
         if (userField) {
@@ -40,29 +41,42 @@ async function paneliAcikTut() {
             await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {});
         }
 
+        // 2. ADIM: SUNUCU SAYFASINA GİT VE REKLAMI EZ
+        console.log("[İŞLEM] Sunucu sayfasına (945572) bağlanılıyor...");
         await page.goto('https://magmanode.com/server?id=945572', { waitUntil: 'networkidle2' });
         
-        // Reklam (google_vignette) atlama
-        if (page.url().includes('google_vignette')) {
-            console.log("[UYARI] Reklam algılandı, sayfa temizleniyor...");
-            await page.goto('https://magmanode.com/server?id=945572', { waitUntil: 'networkidle2' });
+        // Reklam (google_vignette) algılanırsa sayfayı yenileyerek temizle
+        for (let i = 0; i < 3; i++) {
+            if (page.url().includes('google_vignette')) {
+                console.log(`[UYARI] Reklam algılandı, deneme ${i+1}: Sayfa temizleniyor...`);
+                await page.goto('https://magmanode.com/server?id=945572', { waitUntil: 'networkidle2' });
+                await new Promise(r => setTimeout(r, 5000));
+            }
         }
 
-        await new Promise(r => setTimeout(r, 10000)); 
+        // 3. ADIM: START BUTONUNU BUL VE BAS
+        await new Promise(r => setTimeout(r, 10000)); // Sayfanın iyice yüklenmesini bekle
 
         const basildiMi = await page.evaluate(() => {
-            const btns = Array.from(document.querySelectorAll('button, a, span, div'));
-            const startBtn = btns.find(b => b.innerText.toUpperCase().includes('START'));
-            if (startBtn) { startBtn.click(); return true; }
+            const buttons = Array.from(document.querySelectorAll('button, a, span, div.btn'));
+            const target = buttons.find(b => 
+                b.innerText.toUpperCase().includes('START') || 
+                b.innerHTML.toUpperCase().includes('START')
+            );
+            
+            if (target) {
+                target.click();
+                return true;
+            }
             return false;
         });
 
-        if (basildiMi) console.log("[BAŞARILI] Reklam geçildi ve START butonuna basıldı!");
-        else console.log("[DURUM] START butonu görünmüyor.");
+        if (basildiMi) console.log("[BAŞARILI] START butonuna tıklandı! Sunucu uyandırıldı.");
+        else console.log("[DURUM] START butonu bulunamadı. Ya sunucu açık ya da sayfa yüklenmedi.");
 
     } catch (e) {
-        console.log("[HATA] Panel hatası: " + e.message);
-        page = null;
+        console.log("[HATA] Panel operasyonunda aksama: " + e.message);
+        page = null; 
     }
     console.log("--------------------------------------------------");
 }
@@ -70,12 +84,12 @@ async function paneliAcikTut() {
 setInterval(paneliAcikTut, 300000); 
 paneliAcikTut();
 
-// --- 3. MINECRAFT BOT (1.21.11 ÖZEL) ---
+// --- 3. MINECRAFT BOT (afk_bot 1.21.11 ÖZEL) ---
 const botArgs = {
     host: 'gold.magmanode.com',
     port: 34688,
-    username: 'afk_bot',
-    version: '1.21.11' // İstediğin 1.21.11 sürümü buraya çakıldı knk
+    username: 'afk_bot', // Botun adını düzelttim knk!
+    version: '1.21.11'
 };
 
 const sakaMesajlari = [
@@ -84,9 +98,9 @@ const sakaMesajlari = [
     "Dorukkoper'e sormuşlar: 'Sen mi büyüksün seni yazan zeka mı?' diye, sustu garibim! 😂",
     "Mekanın sahibi gelmiş diyorsun ama kapıyı açan el benim Puppeteer'ım! Hafız!",
     "Bak Dorukkoper, senin zıpladığın kadar benim işlemişliğim var. Gardını al!",
-    "Dorukkoper geldi, şimdi herkes sessizce dağılsın. Mekanın sahibi buradayken kimseden ses çıkmaz! 😎",
+    "afk_bot geldi, şimdi herkes sessizce dağılsın. Dorukkoper buradayken kimseden ses çıkmaz! 😎",
     "Bana bak admin, Dorukkoper'e yanlış yapanın IP'sini düğüm yaparım! 🥊",
-    "Laga luga yapmayın beyler, Dorukkoper burada 7/24 bekçidir. 🔥",
+    "Laga luga yapmayın beyler, afk_bot burada 7/24 bekçidir. 🔥",
     "Zıplaya zıplaya bacak kası yaptım, yakında Survivor'a katılıyorum! 🤣",
     "Sunucunun en yakışıklı karakteri benim, aksini iddia eden gitsin zombilerle dans etsin!",
     "Zıplıyorum, eğiliyorum, bakıyorum... Resmen bir hayatım var artık! 😎"
@@ -94,10 +108,9 @@ const sakaMesajlari = [
 
 let bot;
 function createBot() {
-    console.log("[BOT] 1.21.11 sunucusuna bağlanılıyor...");
     bot = mineflayer.createBot(botArgs);
 
-    bot.on('login', () => console.log(">>> [MÜJDE] DORUKKOPER OYUNA GİRDİ! <<<"));
+    bot.on('login', () => console.log(">>> [MÜJDE] afk_bot OYUNA GİRDİ! <<<"));
     
     bot.on('spawn', () => {
         setTimeout(() => {
@@ -133,9 +146,7 @@ setInterval(() => {
 // RACON MESAJ SİSTEMİ (4 Dakikada Bir)
 setInterval(() => {
     if (bot && bot.entity) {
-        const mesaj = sakaMesajlari[Math.floor(Math.random() * sakaMesajlari.length)];
-        bot.chat(mesaj);
-        console.log(`[CHAT] Mesaj: ${mesaj}`);
+        bot.chat(sakaMesajlari[Math.floor(Math.random() * sakaMesajlari.length)]);
     }
 }, 240000); 
 
