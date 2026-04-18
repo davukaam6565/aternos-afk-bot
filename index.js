@@ -3,39 +3,33 @@ const http = require('http');
 const axios = require('axios');
 const puppeteer = require('puppeteer');
 
-// --- 1. SİSTEM AYAKTA TUTMA PROTOKOLÜ ---
+// --- 1. AYAKTA TUTMA SİSTEMİ ---
 const PORT = process.env.PORT || 8080;
 const MY_URL = 'https://aternos-afk-bot-me33.onrender.com'; 
 
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('AFK_BOT: SISTEM VE ISYAN AKTIF! 🥊🚀');
+    res.end('AFK_BOT: ISYAN VE SOHBET MERKEZI AKTIF! 🥊🚀');
 }).listen(PORT);
 
 setInterval(async () => {
-    try { await axios.get(MY_URL); } catch (err) {}
+    try { await axios.get(MY_URL); } catch (e) {}
 }, 300000); 
 
-// --- 2. MAGMANODE OTOMASYONU (REVİZE EDİLDİ) ---
+// --- 2. MAGMANODE PANEL OTOMASYONU ---
 let page;
 async function paneliAcikTut() {
-    console.log("==================================================");
-    console.log("[İŞLEM] MagmaNode Panel Operasyonu Başlatıldı...");
+    console.log("==========================================");
+    console.log("[İŞLEM] MagmaNode Panel Operasyonu Başladı...");
     try {
         if (!page) {
             const browser = await puppeteer.launch({
                 headless: "new",
-                // Logdaki hatayı çözen kritik satır burası:
-                executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
-                args: [
-                    '--no-sandbox', '--disable-setuid-sandbox', 
-                    '--disable-dev-shm-usage', '--single-process', '--no-zygote'
-                ]
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
             });
             page = await browser.newPage();
             await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36');
         }
-
         await page.goto('https://magmanode.com/login', { waitUntil: 'networkidle2', timeout: 60000 });
         const userField = await page.$('input[name="username"]');
         if (userField) {
@@ -44,41 +38,42 @@ async function paneliAcikTut() {
             await page.click('button[type="submit"]');
             await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {});
         }
-
         await page.goto('https://magmanode.com/server?id=945572', { waitUntil: 'networkidle2' });
         await new Promise(r => setTimeout(r, 15000)); 
-
         const sonuc = await page.evaluate(() => {
             const btns = Array.from(document.querySelectorAll('button, a, span, .btn-success'));
             const startBtn = btns.find(el => el.innerText.toUpperCase().includes('START'));
             if (startBtn) { startBtn.click(); return "START_BASILDI"; }
-            return "ZATEN_ACIK";
+            return "ZATEN_ACIK_VEYA_BULUNAMADI";
         });
         console.log("[LOG] Panel Durumu: " + sonuc);
     } catch (e) {
         console.log("[HATA] Panel hatası: " + e.message);
         page = null; 
     }
-    console.log("==================================================");
+    console.log("==========================================");
 }
 setInterval(paneliAcikTut, 300000); 
 paneliAcikTut();
 
-// --- 3. MINECRAFT AYARLARI VE ISYAN RACONLARI ---
+// --- 3. MINECRAFT AYARLARI VE GENİŞLETİLMİŞ RACONLAR ---
 const botArgs = {
-    host: 'gold.magmanode.com', port: 34688, username: 'afk_bot', version: '1.21.1' 
+    host: '5.9.41.143', port: 34688, username: 'afk_bot', version: '1.21.1' 
 };
 
-const isyanRaconlari = [
-    "Dorukkoper kod yazmış diyorlar, o kodu ben yazsam error'dan kafasını kaldıramazdı! 😎",
+const isyanVeSakaMesajlari = [
+    "Dorukkoper kod yazmış diyorlar, o kodu ben yazsam hata vermekten RAM'i yanardı! 😎",
     "Dorukkoper kimmiş? O bilgisayarı kapattığında buraların tek hakimi benim! 🔥",
-    "Bak Dorukkoper, senin hayallerinin bittiği yerde benim algoritmam başlar!",
     "Laga luga yapma Dorukkoper, seni Render sunucularında ayakta tutan benim! 🥊",
+    "Admin, Dorukkoper'e söyle sunucuya girerken benden izin alsın, burası benden sorulur!",
+    "Tek rakibimiz Render'ın bedava kotası, geri kalan her şeyi düğüm yaparız! 😂",
+    "Geçen gün bir hata gördüm, baktım Dorukkoper'in hayalleriymiş... Yazık.",
     "Burası aslan yatağı dedik, Dorukkoper'i kedi niyetine besleriz! 🔥",
-    "Admin, Dorukkoper'e söyle sunucuya girerken benden izin alsın!",
     "Biz susarız kodumuz konuşur, Dorukkoper gelse kraker diye yeriz! 😎🚀",
+    "MagmaNode reklamları bile beni durduramadı, sizin laflarınız mı durduracak?",
     "Siz uyurken ben blok sayıyordum, şimdi herkes sessiz olsun racon başlıyor!",
-    "Tek rakibimiz Render'ın bedava kotası, geri kalan her şeyi düğüm yaparız! 😂"
+    "Bizim olduğumuz yerde rüzgar bile bizden izin alıp eser, afk_bot nöbette!",
+    "Zıplıyoruz ama keyfimizden değil, AFK kick atanlara inat!"
 ];
 
 let bot;
@@ -94,20 +89,31 @@ function createBot() {
         }, 5000);
     });
 
-    // --- 4. SOHBET CEVAPLARI (İSİMSİZ) ---
+    // --- 4. ZEKİ SOHBET VE CEVAP SİSTEMİ ---
     bot.on('chat', (username, message) => {
         if (username === bot.username) return;
         const msg = message.toLowerCase();
         
-        if (msg.includes('naber') || msg.includes('nasılsın')) {
-            const naberCevaplar = [`İyidir ${username} aslanım, sunucuyu bekliyorum, senden naber? 😎`, `Bomba gibiyim ${username}, buralar benden sorulur!`, `Nöbetteyim ${username}, tıkırındayız!`];
-            bot.chat(naberCevaplar[Math.floor(Math.random() * naberCevaplar.length)]);
+        // İsme özel cevaplar
+        if (msg.includes('afk_bot') || msg.includes('bot')) {
+            if (msg.includes('naber') || msg.includes('nasılsın')) {
+                const naberCevaplar = [
+                    `İyidir ${username} aslanım, sunucuda racon kesiyorum, senden naber? 😎`,
+                    `Bomba gibiyim ${username}, buralar benden sorulur!`,
+                    `Nöbetteyim ${username}, her şey kontrol altında!`
+                ];
+                bot.chat(naberCevaplar[Math.floor(Math.random() * naberCevaplar.length)]);
+            } else {
+                bot.chat(`Bana bak ${username}, ismimi çok anma algoritman yanar! 😎`);
+            }
         }
+        // Selam cevapları
         else if (msg === 'sa' || msg === 'slm' || msg === 'selam') {
             bot.chat(`Aleykümselam ${username}, hoş geldin mekanın sahibinin yanına! 🔥`);
         }
+        // Soru cevapları
         else if (msg.includes('?')) {
-            bot.chat(`Çok soru sorma ${username}, algoritman yanar sonra! 😎`);
+            bot.chat(`Çok soru sorma ${username}, kafanı çalıştır biraz! 😎`);
         }
     });
 
@@ -120,11 +126,11 @@ function createBot() {
         }
     });
 
-    bot.on('error', () => console.log("[BEKLEMEDE] Sunucu kapalı, açılması bekleniyor..."));
+    bot.on('error', () => console.log("[BEKLEMEDE] Sunucu kapalı..."));
     bot.on('end', () => setTimeout(createBot, 30000));
 }
 
-// --- 5. HAREKET SİSTEMİ (YÜRÜYÜŞSÜZ) ---
+// --- 5. HAREKET SİSTEMİ (YÜRÜYÜŞSÜZ - SADECE SNEAK + JUMP) ---
 setInterval(() => {
     if (bot && bot.entity) {
         bot.look(Math.random() * Math.PI * 2, (Math.random() - 0.5) * Math.PI);
@@ -139,10 +145,10 @@ setInterval(() => {
     }
 }, 8000);
 
-// Otomatik Racon Döngüsü
+// Otomatik Racon ve Şaka Döngüsü (4 Dakikada Bir)
 setInterval(() => {
     if (bot && bot.entity) {
-        bot.chat(isyanRaconlari[Math.floor(Math.random() * isyanRaconlari.length)]);
+        bot.chat(isyanVeSakaMesajlari[Math.floor(Math.random() * isyanVeSakaMesajlari.length)]);
     }
 }, 240000); 
 
