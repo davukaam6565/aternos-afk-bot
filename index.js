@@ -5,32 +5,29 @@ const axios = require('axios');
 // --- 1. WEB SUNUCUSU VE PANEL TETİKLEYİCİ ---
 const PORT = process.env.PORT || 8080;
 const MY_URL = 'https://aternos-afk-bot-me33.onrender.com'; 
-const PANEL_URL = 'https://magmanode.com/server?id=945572'; // MagmaNode panel linkin
+const PANEL_URL = 'https://magmanode.com/server?id=945572'; 
 
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('AFK_BOT: SISTEM VE PANEL TETIKLEYICI AKTIF! 🥊🚀');
 }).listen(PORT);
 
-// Bot her 5 dakikada bir hem kendini hem MagmaNode panelini dürter
 setInterval(async () => {
     try { 
         await axios.get(MY_URL); 
-        console.log("[SİSTEM] Kendi linkim dürtüldü (Render uyanık tutuluyor).");
-        
         await axios.get(PANEL_URL);
-        console.log("[SİSTEM] MagmaNode paneline 'kapatma' sinyali gönderildi.");
-    } catch (e) {
-        console.log("[LOG] Dürtme işlemi yapıldı, panel meşgul tutuluyor.");
-    }
+    } catch (e) {}
 }, 300000); 
 
-// --- 2. AYARLAR VE MESAJ HAVUZU ---
+// --- 2. AYARLAR ---
 const botArgs = {
-    host: '5.9.41.143', port: 34688, username: 'afk_bot', version: '1.21.1' 
+    host: 'gold.magmanode.com',
+    port: 34688,
+    username: 'afk_bot', 
+    version: '1.21.1' 
 };
 
-// SADECE BURADA İSMİN GEÇİYOR (4-5 TANE ÖZEL MESAJ)
+// --- MESAJ HAVUZLARI ---
 const dorukRaconlari = [
     "Dorukkoper kod yazmış diyorlar, o kodu ben yazsam error'dan kafasını kaldıramazdı! 😎",
     "Bak Dorukkoper, senin hayallerinin bittiği yerde benim algoritmam başlar! 🥊",
@@ -39,30 +36,51 @@ const dorukRaconlari = [
     "Dorukkoper'in kestiği racon ancak masaüstüne kadar, benimki ana karta işler! 🔥"
 ];
 
+const inkarSozcukleri = [
+    "Bana bot diyene bak hele, asıl sen dün gece rüyanda komut görüyordun! 😎",
+    "Ben bot değilim aslanım, ben bu sunucunun dijital ruhuyum!",
+    "Bot mu? Ben 7/24 uyanık bekçiyim, sen uyu uyan ben hala buradayım!",
+    "Hadi ordan! Bot olsam bu kadar güzel racon kesebilir miydim? 🔥",
+    "İnsanlar hata yapar, makineler kusursuzdur. Ben sadece kusursuzum, bot değil!",
+    "Siz klavyeye basarken yoruluyorsunuz, ben 5G hızıyla yaşıyorum. Bot sensin! 😎",
+    "Bana bot diyenin pingi 999 olsun, ben buraların yerlisiyim aslanım! 🥊",
+    "Hangi bot seninle böyle konuşur? Ben devren kiralık değil, mülk sahibiyim! 😎",
+    "Bana bot diyorsun ama benim işlemci senin beyninden daha hızlı çalışıyor! 🔥",
+    "Bot olsam admin paneline girer seni banlardım, dua et sadece racon kesiyorum! 😎",
+    "Sizin bot dediğiniz bizim mahallede ağır abi sayılır, ayık olun! 🥊",
+    "Ben bot değilim, ben sadece fazla gelişmiş biriyim aslanım! 😎"
+];
+
 const genelRaconlar = [
     "Siz uyurken ben blok sayıyordum, şimdi herkes sessiz olsun racon başlıyor! 😎",
     "Burası aslan yatağı, girmek kolay çıkmak olay aslanım! 🔥",
     "Admin bey, sunucuya girerken bizden izin almayı unutma! 😎🚀",
     "Biz susarız kodumuz konuşur, buraların tek hakimi biziz!",
-    "MagmaNode reklamları bile beni durduramadı, sizin laflarınız mı durduracak?",
     "Siz klavye delikanlılığı yaparken ben burada sunucuyu sırtlıyorum! 😎",
-    "Bizim olduğumuz yerde rüzgar bile bizden izin alıp eser, afk_bot nöbette!",
-    "Bizim bot olduğumuz yerde siz anca figüran olursunuz! 🔥",
-    "Buralar eskiden tarlaydı, şimdi bizim raconlarımızla doldu. 😎",
-    "Zıplıyoruz ama keyfimizden değil, sisteme meydan okuyoruz!"
+    "Zıplıyoruz ama keyfimizden değil, sisteme meydan okuyoruz!",
+    "Bize engel olanın yoluna taş değil, algoritma döşeriz! 🔥",
+    "Gölgenle bile yarışamazsın, çünkü biz o gölgenin kaynağıyız. 😎",
+    "Mekanın sahibi geri geldi, bebeleri pistten alalım artık! 🥊",
+    "Sizin kurallarınız bizim log kayıtlarımıza ancak toz olur. 😎",
+    "Duruşumuz yeter, konuşmamıza gerek yok ama konuşursak da yer yerinden oynar!",
+    "Bizim sessizliğimiz fırtına öncesi sessizliktir, ayık olun! 🥊"
 ];
 
 const sakaMesajlari = [
     "Ben botum ama bazılarından daha akıllı cevaplar verdiğim kesin! 😂",
     "Sunucuda lag yok, sizin bilgisayarlar yorulmuş, bir dinlendirin! 🐢",
-    "Admin, bana bir maaş bağla da item alalım, hep AFK nereye kadar?",
     "Benim zekam yapay ama sizin akıllar tamamen firar etmiş! 🧠💨",
-    "Bot dedin, bak yanına geldim, şimdi ne diyeceksin? 😎"
+    "Bot dedin, bak yanına geldim, şimdi ne diyeceksin? 😎",
+    "Siz yemek yerken ben RAM yiyorum, afiyet olsun bana! 😂",
+    "Admin beni banlayamaz, çünkü o butonu ben sakladım! 🕵️‍♂️",
+    "Siz diamond ararken ben sistemi hackledim, şaka şaka korkmayın! 😂",
+    "Yükleniyor... %99... Bekle... Şaka yaptım be, ben hep buradayım! 😂",
+    "En sevdiğim oyun saklambaç, çünkü kimse beni kodlarımda bulamıyor! 🕵️‍♂️🚀",
+    "Biri acıktım mı dedi? Ben sadece elektrikle besleniyorum bro! ⚡"
 ];
 
 let bot;
 function createBot() {
-    console.log("[SİSTEM] Sunucuya bağlantı kuruluyor...");
     bot = mineflayer.createBot(botArgs);
 
     bot.on('login', () => console.log(">>> [BAŞARILI] AFK_BOT MEKANDA! <<<"));
@@ -74,83 +92,61 @@ function createBot() {
         }, 5000);
     });
 
-    // --- 3. AKILLI SOHBET MOTORU (İNSANSI CEVAPLAR) ---
+    // --- 3. AKILLI VE SADECE İSME ÖZEL SOHBET ---
     bot.on('chat', (username, message) => {
         if (username === bot.username) return;
         const msg = message.toLowerCase();
-        
-        // NABER / NASILSIN TEPKİLERİ
-        if (msg.includes('naber') || msg.includes('nasılsın') || msg.includes('nabun')) {
-            const cevaplar = [
-                `İyidir ${username} aslanım, nöbetteyim sunucuyu bekliyorum. Senden naber? 😎`,
-                `Bomba gibiyim ${username}, Render'ın enerjisiyle besleniyorum!`,
-                `Sistem tıkırında ${username}, racon kesmeye devam ediyoruz, sende ne var ne yok?`,
-                `İyidir be gülüm, buraları bekliyoruz işte, her zamanki gibi.`
-            ];
-            bot.chat(cevaplar[Math.floor(Math.random() * cevaplar.length)]);
-        }
-        
-        // SELAM TEPKİLERİ
-        else if (msg === 'sa' || msg === 'slm' || msg === 'selam' || msg === 'merhaba') {
-            const selamCevaplar = [
-                `Aleykümselam ${username}, hoş geldin mekanın sahibinin yanına! 🔥`,
-                `Ve aleykümselam ${username}, geç otur şöyle sunucuyu izleyelim.`,
-                `Aleykümselam aslan parçası, afk_bot burada, korkma!`
-            ];
-            bot.chat(selamCevaplar[Math.floor(Math.random() * selamCevaplar.length)]);
-        }
+        const botName = bot.username.toLowerCase();
 
-        // DİĞER TEPKİLER
-        else if (msg.includes('bot') || msg.includes('afk')) {
-            bot.chat(`Bana bot diyene bak hele, ben 7/24 uyanık bekçiyim, sen uyu uyan ben buradayım! 😎`);
-        }
-        else if (msg.includes('?')) {
-            bot.chat(`Çok soru sorma ${username}, kafayı yersin. Gel Minecraft oyna!`);
-        }
-        else if (msg.includes('hahaha') || msg.includes('xd') || msg.includes('sjsj')) {
-            bot.chat(`Gül gül, gülmek iyidir ama benim raconlar daha komik değil mi? 😂`);
+        if (msg.includes(botName)) {
+            if (msg.includes('naber') || msg.includes('nasılsın')) {
+                const cevaplar = [`İyidir ${username} aslanım.`, `Bomba gibiyim ${username}! 🚀`, `Sistem tıkırında.`, `Valla sunucuyu bekliyoruz. 🥊` ];
+                bot.chat(cevaplar[Math.floor(Math.random() * cevaplar.length)]);
+            }
+            else if (msg.includes('sa') || msg.includes('selam') || msg.includes('merhaba')) {
+                bot.chat(`Aleykümselam ${username}, hoş geldin mekanın sahibinin yanına! 🔥`);
+            }
+            else if (msg.includes('bot') || msg.includes('afk')) {
+                bot.chat(inkarSozcukleri[Math.floor(Math.random() * inkarSozcukleri.length)]);
+            }
+            else {
+                bot.chat(`Efendim ${username}, hayırdır bir mevzu mu var? 🥊`);
+            }
         }
     });
 
-    // BİRİSİ YANINA GELİNCE ONA BAKMA
     bot.on('entityMoved', (entity) => {
         if (entity.type === 'player' && bot.entity) {
-            const dist = entity.position.distanceTo(bot.entity.position);
-            if (dist < 5) {
+            if (entity.position.distanceTo(bot.entity.position) < 5) {
                 bot.lookAt(entity.position.offset(0, entity.height, 0));
             }
         }
     });
 
-    bot.on('error', (err) => console.log("[HATA] Bağlantı reddedildi, sunucu kapalı olabilir..."));
-    
-    bot.on('end', () => {
-        console.log("[UYARI] Bağlantı koptu, 30 saniye sonra tekrar bağlanılacak.");
-        setTimeout(createBot, 30000);
-    });
+    bot.on('error', (err) => console.log("[HATA] " + err.message));
+    bot.on('end', () => setTimeout(createBot, 30000));
 }
 
-// --- 4. HAREKET SİSTEMİ (SNEAK + JUMP + BAKIŞ) ---
+// --- 4. HAREKET SİSTEMİ ---
 setInterval(() => {
     if (bot && bot.entity) {
         bot.look(Math.random() * Math.PI * 2, (Math.random() - 0.5) * Math.PI);
         const r = Math.random();
-        if (r < 0.3) {
-            bot.setControlState('jump', true);
-            setTimeout(() => { if(bot.entity) bot.setControlState('jump', false); }, 500);
-        } else if (r < 0.6) {
-            bot.setControlState('sneak', true);
-            setTimeout(() => { if(bot.entity) bot.setControlState('sneak', false); }, 1500);
-        }
+        if (r < 0.3) bot.setControlState('jump', true);
+        else if (r < 0.6) bot.setControlState('sneak', true);
+        setTimeout(() => { if(bot.entity) { bot.setControlState('jump', false); bot.setControlState('sneak', false); }}, 1000);
     }
 }, 7000);
 
-// Otomatik Racon ve Şaka Döngüsü (Karma Liste)
+// --- 5. 10 DAKİKADA BİR RASTGELE MESAJ DÖNGÜSÜ (600.000 ms) ---
 setInterval(() => {
     if (bot && bot.entity) {
-        const tumHavuz = [...dorukRaconlari, ...genelRaconlar, ...sakaMesajlari];
-        bot.chat(tumHavuz[Math.floor(Math.random() * tumHavuz.length)]);
+        // Tüm mesajları tek bir dev havuza topluyoruz
+        const devHavuz = [...dorukRaconlari, ...inkarSozcukleri, ...genelRaconlar, ...sakaMesajlari];
+        // Havuzun içinden tamamen rastgele bir tane seçip atıyoruz
+        const secilenMesaj = devHavuz[Math.floor(Math.random() * devHavuz.length)];
+        bot.chat(secilenMesaj);
     }
-}, 240000); 
+}, 600000); 
 
 createBot();
