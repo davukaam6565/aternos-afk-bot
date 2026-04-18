@@ -2,17 +2,27 @@ const mineflayer = require('mineflayer');
 const http = require('http');
 const axios = require('axios');
 
-// --- 1. WEB SUNUCUSU (7/24 Aktiflik İçin) ---
+// --- 1. WEB SUNUCUSU VE PANEL TETİKLEYİCİ ---
 const PORT = process.env.PORT || 8080;
 const MY_URL = 'https://aternos-afk-bot-me33.onrender.com'; 
+const PANEL_URL = 'https://magmanode.com/server?id=945572'; // MagmaNode panel linkin
 
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('AFK_BOT: SISTEM VE RACON AKTIF! 🥊🚀');
+    res.end('AFK_BOT: SISTEM VE PANEL TETIKLEYICI AKTIF! 🥊🚀');
 }).listen(PORT);
 
+// Bot her 5 dakikada bir hem kendini hem MagmaNode panelini dürter
 setInterval(async () => {
-    try { await axios.get(MY_URL); } catch (e) {}
+    try { 
+        await axios.get(MY_URL); 
+        console.log("[SİSTEM] Kendi linkim dürtüldü (Render uyanık tutuluyor).");
+        
+        await axios.get(PANEL_URL);
+        console.log("[SİSTEM] MagmaNode paneline 'kapatma' sinyali gönderildi.");
+    } catch (e) {
+        console.log("[LOG] Dürtme işlemi yapıldı, panel meşgul tutuluyor.");
+    }
 }, 300000); 
 
 // --- 2. AYARLAR VE MESAJ HAVUZU ---
