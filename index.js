@@ -97,9 +97,9 @@ function createBot() {
             const pitch = (Math.random() - 0.5) * Math.PI;
             bot.look(yaw, pitch);
             bot.chat(sakaciMesaj);
-            console.log(`[MESAJ] 5 dk doldu: ${sakaciMesaj}`);
+            console.log(`[MESAJ] 10 dk doldu: ${sakaciMesaj}`);
         }
-    }, 300000);
+    }, 600000);
 
     bot.on('error', (err) => console.log("Hata oluştu:", err));
 }
