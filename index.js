@@ -58,7 +58,7 @@ async function paneliAcikTut() {
         const startButton = await page.$('button.btn-primary'); 
         if (startButton) {
             const text = await page.evaluate(el => el.innerText, startButton);
-            if (text.includes('Start') || text.includes('Başlat')) {
+            if (text.includes('START') || text.includes('Başlat')) {
                 console.log("[UYARI] Sunucu kapali! Baslatiliyor...");
                 await startButton.click();
             }
