@@ -4,20 +4,19 @@ const axios = require('axios');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // --- 1. YAPAY ZEKA AYARI ---
-const genAI = new GoogleGenerativeAI("AizAsyA8UVrm1xZmIZBiesQEsKLX9xiZDepsFz0"); // API Anahtarın burada
+const genAI = new GoogleGenerativeAI("AizAsyA8UVrm1xZmIZBiesQEsKLX9xiZDepsFz0"); // Senin API anahtarın
 const aiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-// --- 2. WEB SUNUCUSU VE PANEL TETİKLEYİCİ ---
+// --- 2. WEB SUNUCUSU ---
 const PORT = process.env.PORT || 8080;
 const MY_URL = 'https://aternos-afk-bot-me33.onrender.com';
 const PANEL_URL = 'https://magmanode.com/server?id=945572';
 
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('AFK_BOT: AKILLI ZEKA VE MAGMANODE KORUMASI AKTIF! 🔥🤖');
+    res.end('AFK_BOT: AKILLI ZEKA VE MAGMANODE KORUMASI AKTIF! 🔥');
 }).listen(PORT);
 
-// MagmaNode Paneli tetikleme döngüsü (5 dakikada bir)
 setInterval(async () => {
     try {
         await axios.get(MY_URL);
@@ -34,7 +33,7 @@ const botArgs = {
     port: 34688,
     username: 'afk_bot',
     version: '1.21.11',
-    checkTimeoutInterval: 90000 // KEEPALIVE HATASINI ÖNLEYEN KRİTİK AYAR (90 Saniye)
+    checkTimeoutInterval: 90000
 };
 
 let bot;
@@ -47,30 +46,30 @@ function createBot() {
     });
 
     bot.on('spawn', () => {
-        // Giriş yapma komutları
         setTimeout(() => {
             bot.chat('/register Sifre123 Sifre123');
             bot.chat('/login Sifre123');
         }, 5000);
     });
 
-    // --- 4. AKILLI YAPAY ZEKA SOHBET SİSTEMİ ---
+    // --- 4. AKILLI SOHBET SİSTEMİ (PLAYER 2 MODU) ---
     bot.on('chat', async (username, message) => {
         if (username === bot.username) return;
 
         const msg = message.toLowerCase();
         const botName = bot.username.toLowerCase();
 
-        // Botun adı geçerse veya bot kelimesi geçerse devreye girer
+        // Botun adı geçerse veya 'bot' kelimesi geçerse cevap verir
         if (msg.includes(botName) || msg.includes('bot')) {
             try {
-                const prompt = `Sen Minecraft'ta bir AFK botusun. Adın ${bot.username}. Samimi, hafif atarlı ama kafa dengi bir mahalle abisi gibi konuş. Argo kullanma ama "aslanım", "kardeşim", "ayık ol" gibi kelimeler kullanabilirsin. Cevapların kısa olsun. Kullanıcı "${username}" sana şunu dedi: "${message}"`;
-
+                // ÖNEMLİ: Senin mesajını da 'prompt' içine ekledim ki bilsin neye cevap verdiğini
+                const prompt = `Sen Minecraft'ta bir oyuncusun. Adın ${bot.username}. Samimi, hafif atarlı ama sadık bir arkadaş (Player 2) gibi davran. Kısa cevaplar ver. Oyuncu sana şunu dedi: "${message}"`;
+                
                 const result = await aiModel.generateContent(prompt);
                 const response = await result.response;
                 const text = response.text();
 
-                // Minecraft mesaj sınırı 256'dır
+                // Mesaj çok uzunsa Minecraft kesmesin diye 250 karakter sınırı
                 bot.chat(text.substring(0, 250));
             } catch (error) {
                 console.log("AI Hatası:", error);
@@ -79,20 +78,19 @@ function createBot() {
         }
     });
 
-    // --- 5. HAREKET VE SUNUCUYU UYANIK TUTMA SİSTEMİ ---
+    // --- 5. HAREKET VE AFK SİSTEMİ ---
     setInterval(() => {
         if (bot && bot.entity) {
             // Rastgele bakış
             bot.look(Math.random() * Math.PI * 2, (Math.random() - 0.5) * Math.PI);
             
-            // Kol sallama (Aktiflik sinyali)
+            // El sallama
             bot.swingArm('right');
 
-            // Envanter slot değiştirme (Paket trafiği sağlar)
-            const randomSlot = Math.floor(Math.random() * 9);
-            bot.setQuickBarSlot(randomSlot);
+            // Envanter slot değiştirme (Paket trafiği için)
+            bot.setQuickBarSlot(Math.floor(Math.random() * 9));
 
-            // Zıplama veya Eğilme (Aktivite)
+            // Zıplama veya Eğilme
             const r = Math.random();
             if (r < 0.2) {
                 bot.setControlState('jump', true);
@@ -102,14 +100,14 @@ function createBot() {
                 setTimeout(() => bot.setControlState('sneak', false), 500);
             }
         }
-    }, 12000); // 12 saniyede bir işlem yapar
+    }, 12000);
 
-    // --- 6. HATA VE BAĞLANTI YÖNETİMİ ---
+    // --- 6. HATA YÖNETİMİ ---
     bot.on('error', (err) => console.log("[SİSTEM HATASI] " + err.message));
-
+    
     bot.on('end', () => {
         console.log("Bağlantı koptu, 10 saniye sonra tekrar giriyorum...");
-        setTimeout(createBot, 10000); // 10 saniye bekleyip tekrar bağlanır
+        setTimeout(createBot, 10000);
     });
 
     bot.on('kicked', (reason) => {
@@ -117,5 +115,4 @@ function createBot() {
     });
 }
 
-// Botu başlat
 createBot();
