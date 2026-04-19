@@ -4,7 +4,7 @@ const axios = require('axios');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // --- 1. YAPAY ZEKA AYARI ---
-const genAI = new GoogleGenerativeAI("AizAsyA8UVrm1xZmIZBiesQEsKLX9xiZDepsFz0"); // Senin API anahtarın
+const genAI = new GoogleGenerativeAI("AIzaSyAxaOBkWsDhVKVwQBjDMgqKR153Kv1_bdM"); // Senin API anahtarın
 const aiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // --- 2. WEB SUNUCUSU ---
