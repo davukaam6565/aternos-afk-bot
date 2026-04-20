@@ -4,36 +4,33 @@ const axios = require('axios');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // --- 1. YAPAY ZEKA AYARI ---
-const genAI = new GoogleGenerativeAI("AIzaSyAxaOBkWsDhVKVwQBjDMgqKR153Kv1_bdM"); // Senin API anahtarın
+const genAI = new GoogleGenerativeAI("AiZaSyAxaOBkWsDhVKvWQbJDmGqKR153Kv1_bdM");
 const aiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-// --- 2. WEB SUNUCUSU ---
-const PORT = process.env.PORT || 8080;
-const MY_URL = 'https://aternos-afk-bot-me33.onrender.com';
-const PANEL_URL = 'https://magmanode.com/server?id=945572';
+// --- 2. WEB SUNUCUSU VE KEEP-ALIVE ---
+const PORT = process.env.PORT || 10000;
+const MY_URL = 'https://aternos-afk-bot-me33.onrender.com/';
 
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('AFK_BOT: AKILLI ZEKA VE MAGMANODE KORUMASI AKTIF! 🔥');
+    res.end('AFK_BOT: EĞİLME VE ZIPLAMA MODU AKTİF! 🔥');
 }).listen(PORT);
 
 setInterval(async () => {
     try {
         await axios.get(MY_URL);
-        await axios.get(PANEL_URL, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-        console.log("Panel tetiklendi ve Render uyanık tutuldu.");
     } catch (e) {
-        console.log("Panel tetikleme hatası (önemsiz)");
+        console.log("Keep-alive hatası: " + e.message);
     }
-}, 300000);
+}, 300000); 
 
-// --- 3. BOT AYARLARI ---
+// --- 3. BOT AYARLARI (HOST DÜZELTİLDİ) ---
 const botArgs = {
-    host: 'gold.magmanode.com',
+    host: 'gold.magmanode.com', // Sayısal IP olarak sabitlendi
     port: 34688,
     username: 'afk_bot',
     version: '1.21.11',
-    checkTimeoutInterval: 90000
+    checkTimeoutInterval: 60000
 };
 
 let bot;
@@ -42,77 +39,56 @@ function createBot() {
     bot = mineflayer.createBot(botArgs);
 
     bot.on('login', () => {
-        console.log(">>> BAŞARILI: AFK_BOT MEKANDA VE AKILLI! <<<");
+        console.log(">>> BOT SUNUCUYA GİRİŞ YAPTI <<<");
     });
 
     bot.on('spawn', () => {
         setTimeout(() => {
             bot.chat('/register Sifre123 Sifre123');
             bot.chat('/login Sifre123');
-        }, 5000);
+        }, 10000);
     });
 
-    // --- 4. AKILLI SOHBET SİSTEMİ (PLAYER 2 MODU) ---
-    bot.on('chat', async (username, message) => {
-        if (username === bot.username) return;
-
-        const msg = message.toLowerCase();
-        const botName = bot.username.toLowerCase();
-
-        // Botun adı geçerse veya 'bot' kelimesi geçerse cevap verir
-        if (msg.includes(botName) || msg.includes('bot')) {
-            try {
-                // ÖNEMLİ: Senin mesajını da 'prompt' içine ekledim ki bilsin neye cevap verdiğini
-                const prompt = `Sen Minecraft'ta bir oyuncusun. Adın ${bot.username}. Samimi, hafif atarlı ama sadık bir arkadaş (Player 2) gibi davran. Kısa cevaplar ver. Oyuncu sana şunu dedi: "${message}"`;
-                
-                const result = await aiModel.generateContent(prompt);
-                const response = await result.response;
-                const text = response.text();
-
-                // Mesaj çok uzunsa Minecraft kesmesin diye 250 karakter sınırı
-                bot.chat(text.substring(0, 250));
-            } catch (error) {
-                console.log("AI Hatası:", error);
-                bot.chat(`Valla kafam yandı ${username}, birazdan konuşalım mı?`);
-            }
-        }
-    });
-
-    // --- 5. HAREKET VE AFK SİSTEMİ ---
+    // --- 4. HAREKET SİSTEMİ (EĞİLME VE ZIPLAMA EKLENDİ) ---
+    // Paket aşımı yapmaması için 30 saniyede bir rastgele hareket yapar
     setInterval(() => {
         if (bot && bot.entity) {
-            // Rastgele bakış
-            bot.look(Math.random() * Math.PI * 2, (Math.random() - 0.5) * Math.PI);
-            
-            // El sallama
-            bot.swingArm('right');
-
-            // Envanter slot değiştirme (Paket trafiği için)
-            bot.setQuickBarSlot(Math.floor(Math.random() * 9));
-
-            // Zıplama veya Eğilme
             const r = Math.random();
-            if (r < 0.2) {
+            
+            if (r < 0.33) {
+                // ZIPLAMA
                 bot.setControlState('jump', true);
                 setTimeout(() => bot.setControlState('jump', false), 500);
-            } else if (r < 0.4) {
+                console.log("Bot zıpladı.");
+            } else if (r < 0.66) {
+                // EĞİLME (SNEAK)
                 bot.setControlState('sneak', true);
-                setTimeout(() => bot.setControlState('sneak', false), 500);
+                setTimeout(() => bot.setControlState('sneak', false), 2000); // 2 saniye eğik kalır
+                console.log("Bot eğildi.");
+            } else {
+                // ETRAFA BAKMA
+                const yaw = (Math.random() - 0.5) * 2 * Math.PI;
+                bot.look(yaw, 0, false);
+                console.log("Bot etrafa baktı.");
             }
         }
-    }, 12000);
+    }, 30000); // 30 saniye aralık paket hatasını önler
 
-    // --- 6. HATA YÖNETİMİ ---
-    bot.on('error', (err) => console.log("[SİSTEM HATASI] " + err.message));
-    
-    bot.on('end', () => {
-        console.log("Bağlantı koptu, 10 saniye sonra tekrar giriyorum...");
-        setTimeout(createBot, 10000);
+    // --- 5. SOHBET VE HATA YÖNETİMİ ---
+    bot.on('chat', async (username, message) => {
+        if (username === bot.username) return;
+        if (message.toLowerCase().includes('bot')) {
+            try {
+                const prompt = `Minecraft oyuncusu gibi kısa cevap ver: ${message}`;
+                const result = await aiModel.generateContent(prompt);
+                bot.chat(result.response.text().substring(0, 100));
+            } catch (err) { console.log("AI Hatası"); }
+        }
     });
 
-    bot.on('kicked', (reason) => {
-        console.log("SUNUCUDAN ATILDIK! SEBEP: " + reason);
-    });
+    bot.on('error', (err) => console.log("Hata: " + err.message));
+    bot.on('end', () => setTimeout(createBot, 15000));
+    bot.on('kicked', (reason) => console.log("Atıldık: " + reason));
 }
 
 createBot();
